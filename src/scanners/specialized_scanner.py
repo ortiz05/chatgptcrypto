@@ -1,4 +1,5 @@
 from .base_scanner import BaseScanner
+from src.web.app import db, Token
 import logging
 import asyncio
 
@@ -39,13 +40,20 @@ class AllTokensScanner(BaseScanner):
             logger.error(f"Error in AllTokensScanner: {e}")
 
     def process_token_profiles(self, response):
-        for token in response.get("links", []):
-            logger.info(f"Token Profile: {token}")
+        for token_data in response.get("links", []):
+            token = Token(
+                name=token_data.get("header", "Unknown"),
+                symbol=token_data.get("description", "Unknown"),
+                market_cap=None,  # Replace with actual key if available
+                transactions=None,  # Replace with actual key if available
+            )
+            db.session.merge(token)
+        db.session.commit()
 
     def process_boosted_tokens(self, response):
-        for boost in response.get("links", []):
-            logger.info(f"Boosted Token: {boost}")
+        for boost_data in response.get("links", []):
+            logger.info(f"Boosted Token: {boost_data}")
 
     def process_top_boosts(self, response):
-        for boost in response.get("links", []):
-            logger.info(f"Top Boost: {boost}")
+        for boost_data in response.get("links", []):
+            logger.info(f"Top Boost: {boost_data}")
