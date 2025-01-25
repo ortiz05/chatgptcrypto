@@ -48,8 +48,6 @@ services:
     depends_on:
       - db
       - redis
-    deploy:
-      replicas: 3
 
   pool_scanner:
     build:
@@ -62,8 +60,6 @@ services:
     depends_on:
       - db
       - redis
-    deploy:
-      replicas: 3
 
   db:
     image: postgres:13
