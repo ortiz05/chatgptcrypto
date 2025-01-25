@@ -7,7 +7,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# Define a Token model to store data
 class Token(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
@@ -17,9 +16,8 @@ class Token(db.Model):
 
 @app.route('/api/tokens')
 def get_tokens():
-    # Query all tokens from the database
     tokens = Token.query.all()
-    tokens_data = [
+    return jsonify([
         {
             "name": token.name,
             "symbol": token.symbol,
@@ -27,8 +25,7 @@ def get_tokens():
             "transactions": token.transactions,
         }
         for token in tokens
-    ]
-    return jsonify(tokens_data)
+    ])
 
 if __name__ == "__main__":
     app.run(debug=True)
