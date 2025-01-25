@@ -1,6 +1,7 @@
 import aiohttp
 import logging
 from .rate_limiter import SlidingWindowRateLimiter
+import asyncio
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +23,10 @@ class BaseScanner:
         try:
             async with aiohttp.ClientSession(headers=self.headers) as session:
                 async with session.get(f"{self.base_url}/{endpoint}", params=params) as response:
+                    if response.status == 429:
+                        logger.error(f"Rate limit hit: {response.status}. Endpoint: {endpoint}, Params: {params}")
+                        await asyncio.sleep(60)  # Wait for rate-limit cooldown
+                        return None
                     if response.status != 200:
                         logger.error(f"API request failed: {response.status}. Endpoint: {endpoint}, Params: {params}")
                         return None

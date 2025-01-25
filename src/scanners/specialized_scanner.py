@@ -1,12 +1,13 @@
 from .base_scanner import BaseScanner
 from src.database import db, Token, Pool, TokenBoost
 import logging
+import asyncio
 
 logger = logging.getLogger(__name__)
 
 class TokenProfileScanner(BaseScanner):
     async def get_token_profiles(self):
-        return await self._make_request("profiles", "token_profile")
+        return await self._make_request("token-profiles/latest/v1", "token_profile")
 
     async def run(self):
         while True:
@@ -24,19 +25,19 @@ class TokenProfileScanner(BaseScanner):
     def process_tokens(self, tokens):
         token_objects = [
             Token(
-                name=token['name'],
-                symbol=token['symbol'],
-                price_usd=token.get('priceUsd', 0),
-                volume_24h=token.get('volume24h', 0),
-                chain=token.get('chain', 'unknown')
-            ) for token in tokens
+                name=token['header'],
+                symbol=token['description'],
+                price_usd=0,  # Placeholder, adjust based on API
+                volume_24h=0,  # Placeholder
+                chain=token['chainId']
+            ) for token in tokens.get('links', [])
         ]
         db.session.bulk_save_objects(token_objects)
         db.session.commit()
 
 class BoostedTokenScanner(BaseScanner):
     async def get_boosted_tokens(self):
-        return await self._make_request("boosted", "boosted_tokens")
+        return await self._make_request("token-boosts/latest/v1", "boosted_tokens")
 
     async def run(self):
         while True:
@@ -54,17 +55,17 @@ class BoostedTokenScanner(BaseScanner):
     def process_boosted_tokens(self, boosts):
         boost_objects = [
             TokenBoost(
-                token_address=boost['address'],
-                boost_score=boost.get('score', 0),
-                boost_rank=boost.get('rank', 0)
-            ) for boost in boosts
+                token_address=boost['tokenAddress'],
+                boost_score=boost.get('amount', 0),
+                boost_rank=boost.get('totalAmount', 0)
+            ) for boost in boosts.get('links', [])
         ]
         db.session.bulk_save_objects(boost_objects)
         db.session.commit()
 
 class PairScanner(BaseScanner):
     async def get_pairs(self):
-        return await self._make_request("pairs", "pairs")
+        return await self._make_request("latest/dex/pairs/solana/example-pair-id", "pairs")
 
     async def run(self):
         while True:
@@ -85,16 +86,16 @@ class PairScanner(BaseScanner):
                 name=pair['baseToken']['name'],
                 symbol=pair['baseToken']['symbol'],
                 price_usd=pair.get('priceUsd', 0),
-                volume_24h=pair.get('volume24h', 0),
-                chain=pair.get('chain', 'unknown')
-            ) for pair in pairs
+                volume_24h=0,  # Placeholder
+                chain=pair['chainId']
+            ) for pair in pairs.get('pairs', [])
         ]
         db.session.bulk_save_objects(pair_objects)
         db.session.commit()
 
 class PoolScanner(BaseScanner):
     async def get_pools(self):
-        return await self._make_request("pools", "pools")
+        return await self._make_request("token-pairs/v1/solana/example-token", "pools")
 
     async def run(self):
         while True:
@@ -112,11 +113,11 @@ class PoolScanner(BaseScanner):
     def process_pools(self, pools):
         pool_objects = [
             Pool(
-                chain=pool['chain'],
-                pair_address=pool['address'],
+                chain=pool['chainId'],
+                pair_address=pool['pairAddress'],
                 dex_id=pool.get('dexId'),
-                liquidity_usd=pool.get('liquidityUsd', 0),
-                volume_24h=pool.get('volume24h', 0)
+                liquidity_usd=pool.get('liquidity', {}).get('usd', 0),
+                volume_24h=0  # Placeholder
             ) for pool in pools
         ]
         db.session.bulk_save_objects(pool_objects)
