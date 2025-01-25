@@ -23,7 +23,7 @@ class BaseScanner:
             async with aiohttp.ClientSession(headers=self.headers) as session:
                 async with session.get(f"{self.base_url}/{endpoint}", params=params) as response:
                     if response.status != 200:
-                        logger.error(f"API request failed: {response.status}")
+                        logger.error(f"API request failed: {response.status}. Endpoint: {endpoint}, Params: {params}")
                         return None
                     return await response.json()
         except Exception as e:
