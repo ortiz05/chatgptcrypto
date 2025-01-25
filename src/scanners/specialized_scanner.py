@@ -1,5 +1,6 @@
 from .base_scanner import BaseScanner
 import logging
+import asyncio
 
 logger = logging.getLogger(__name__)
 
@@ -13,17 +14,26 @@ class AllTokensScanner(BaseScanner):
 
         try:
             for scanner_type, endpoint in endpoints.items():
-                response = await self._make_request(endpoint, "default")
-                if not response:
-                    logger.warning(f"No data fetched for {scanner_type}.")
-                    continue
+                while True:
+                    try:
+                        response = await self._make_request(endpoint, "default")
+                        if not response:
+                            logger.warning(f"No data fetched for {scanner_type}. Retrying in 60 seconds...")
+                            await asyncio.sleep(60)
+                            continue
 
-                if scanner_type == "token_profiles":
-                    self.process_token_profiles(response)
-                elif scanner_type == "boosted_tokens":
-                    self.process_boosted_tokens(response)
-                elif scanner_type == "top_boosts":
-                    self.process_top_boosts(response)
+                        if scanner_type == "token_profiles":
+                            self.process_token_profiles(response)
+                        elif scanner_type == "boosted_tokens":
+                            self.process_boosted_tokens(response)
+                        elif scanner_type == "top_boosts":
+                            self.process_top_boosts(response)
+
+                        await asyncio.sleep(60)  # Add a delay between requests to avoid rate limits
+                        break
+                    except Exception as e:
+                        logger.error(f"Error in {scanner_type}: {e}")
+                        await asyncio.sleep(60)  # Retry after a delay
 
         except Exception as e:
             logger.error(f"Error in AllTokensScanner: {e}")

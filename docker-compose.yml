@@ -20,7 +20,6 @@ services:
     environment:
       - DATABASE_URL=postgresql://postgres:password@db:5432/scanner_db
       - REDIS_URL=redis://redis:6379
-      - SCANNER_TYPE=profile
     depends_on:
       - db
       - redis
@@ -32,7 +31,6 @@ services:
     environment:
       - DATABASE_URL=postgresql://postgres:password@db:5432/scanner_db
       - REDIS_URL=redis://redis:6379
-      - SCANNER_TYPE=boost
     depends_on:
       - db
       - redis
@@ -44,7 +42,6 @@ services:
     environment:
       - DATABASE_URL=postgresql://postgres:password@db:5432/scanner_db
       - REDIS_URL=redis://redis:6379
-      - SCANNER_TYPE=pair
     depends_on:
       - db
       - redis
@@ -56,7 +53,6 @@ services:
     environment:
       - DATABASE_URL=postgresql://postgres:password@db:5432/scanner_db
       - REDIS_URL=redis://redis:6379
-      - SCANNER_TYPE=pool
     depends_on:
       - db
       - redis
