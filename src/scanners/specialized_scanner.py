@@ -5,6 +5,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 class TokenProfileScanner(BaseScanner):
+    async def get_token_profiles(self):
+        # Simulated API call
+        return await self._make_request("profiles", "token_profile")
+
     async def run(self):
         tokens = await self.get_token_profiles()
         if tokens:
@@ -25,6 +29,10 @@ class TokenProfileScanner(BaseScanner):
 
 
 class BoostedTokenScanner(BaseScanner):
+    async def get_boosted_tokens(self):
+        # Simulated API call
+        return await self._make_request("boosted", "boosted_tokens")
+
     async def run(self):
         boosts = await self.get_boosted_tokens()
         if boosts:
@@ -43,6 +51,10 @@ class BoostedTokenScanner(BaseScanner):
 
 
 class PairScanner(BaseScanner):
+    async def get_pairs(self):
+        # Simulated API call
+        return await self._make_request("pairs", "pairs")
+
     async def run(self):
         pairs = await self.get_pairs()
         if pairs:
@@ -63,6 +75,10 @@ class PairScanner(BaseScanner):
 
 
 class PoolScanner(BaseScanner):
+    async def get_pools(self):
+        # Simulated API call
+        return await self._make_request("pools", "pools")
+
     async def run(self):
         pools = await self.get_pools()
         if pools:
