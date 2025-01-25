@@ -52,7 +52,7 @@ docker-compose build --no-cache
 
 # Start services
 docker-compose up -d db redis
-sleep 10  # Wait for database to be ready
+sleep 10  
 
 # Start web and scanners
 docker-compose up -d

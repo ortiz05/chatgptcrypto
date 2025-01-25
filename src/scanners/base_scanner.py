@@ -1,6 +1,6 @@
 import aiohttp
 import logging
-from src.scanners.rate_limiter import SlidingWindowRateLimiter
+from .rate_limiter import SlidingWindowRateLimiter
 
 logger = logging.getLogger(__name__)
 
