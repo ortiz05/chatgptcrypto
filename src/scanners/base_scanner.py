@@ -7,15 +7,12 @@ logger = logging.getLogger(__name__)
 
 class BaseScanner:
     def __init__(self):
-        self.base_url = "https://api.dexscreener.com/latest/dex"
+        self.base_url = "https://api.dexscreener.com"
         self.headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
         }
         self.limiters = {
-            'token_profile': SlidingWindowRateLimiter(60),
-            'boosted_tokens': SlidingWindowRateLimiter(60),
-            'pairs': SlidingWindowRateLimiter(300),
-            'pools': SlidingWindowRateLimiter(300)
+            'default': SlidingWindowRateLimiter(60),
         }
 
     async def _make_request(self, endpoint, limiter_key, params=None):
