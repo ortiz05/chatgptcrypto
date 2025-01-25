@@ -10,8 +10,10 @@ services:
     environment:
       - DATABASE_URL=postgresql://postgres:password@db:5432/scanner_db
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   profile_scanner:
     build:
@@ -21,8 +23,10 @@ services:
       - DATABASE_URL=postgresql://postgres:password@db:5432/scanner_db
       - REDIS_URL=redis://redis:6379
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   boost_scanner:
     build:
@@ -32,8 +36,10 @@ services:
       - DATABASE_URL=postgresql://postgres:password@db:5432/scanner_db
       - REDIS_URL=redis://redis:6379
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   pair_scanner:
     build:
@@ -43,8 +49,10 @@ services:
       - DATABASE_URL=postgresql://postgres:password@db:5432/scanner_db
       - REDIS_URL=redis://redis:6379
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   pool_scanner:
     build:
@@ -54,8 +62,10 @@ services:
       - DATABASE_URL=postgresql://postgres:password@db:5432/scanner_db
       - REDIS_URL=redis://redis:6379
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   db:
     image: postgres:13
