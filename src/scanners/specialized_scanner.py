@@ -21,7 +21,6 @@ class AllTokensScanner(BaseScanner):
                         await asyncio.sleep(60)
                         continue
 
-                    # Process data based on the endpoint
                     if endpoint_name == "token_profiles":
                         self.process_token_profiles(response)
                     elif endpoint_name == "boosted_tokens":
@@ -34,14 +33,15 @@ class AllTokensScanner(BaseScanner):
 
     def process_token_profiles(self, response):
         if isinstance(response, list):
-            for token_data in response:
-                token = Token(
-                    name=token_data.get("header", "Unknown"),
-                    symbol=token_data.get("description", "Unknown"),
-                    market_cap=None,  # Replace with actual key if available
-                    transactions=None,  # Replace with actual key if available
-                )
-                db.session.merge(token)
+            with db.session.no_autoflush:
+                for token_data in response:
+                    token = Token(
+                        name=token_data.get("header", "Unknown"),
+                        symbol=token_data.get("description", "Unknown"),
+                        market_cap=None,  # Replace with actual key if available
+                        transactions=None,  # Replace with actual key if available
+                    )
+                    db.session.merge(token)
             db.session.commit()
             logger.info("Token profiles saved to the database.")
         else:
